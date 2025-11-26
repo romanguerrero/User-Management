@@ -62,7 +62,7 @@ INSERT INTO posts (id, user_id, title, created_at, updated_at) VALUES
     (8, 4, 'Kubernetes Deployment', '2025-01-03 15:45:00', '2025-01-03 15:45:00'),
     (9, 4, 'CI/CD Best Practices', '2025-01-05 10:20:00', '2025-01-05 10:20:00'),
     (10, 4, 'Monitoring and Observability', '2025-01-06 12:00:00', '2025-01-06 12:00:00')
-    ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO NOTHING;
 
 -- Add content field to posts table
 ALTER TABLE posts
