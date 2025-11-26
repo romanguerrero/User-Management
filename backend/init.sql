@@ -66,7 +66,7 @@ INSERT INTO posts (id, user_id, title, created_at, updated_at) VALUES
 
 -- Add content field to posts table
 ALTER TABLE posts
-    ADD COLUMN content TEXT DEFAULT '' NOT NULL;
+    ADD COLUMN IF NOT EXISTS content TEXT DEFAULT 'Legacy post, content not available' NOT NULL;
 
 -- Add posts with content
 INSERT INTO posts (id, user_id, title, content, created_at, updated_at) VALUES
