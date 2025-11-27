@@ -34,6 +34,10 @@ const columns = [
     header: 'Phone',
     cell: info => info.getValue(),
   }),
+  columnHelper.accessor('posts', {
+    header: 'Post Count',
+    cell: info => info.getValue(),
+  }),
 ]
 
 const TableContent = memo(() => {
