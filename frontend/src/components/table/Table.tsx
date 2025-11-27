@@ -36,7 +36,7 @@ const columns = [
   }),
   columnHelper.accessor('posts', {
     header: 'Post Count',
-    cell: info => info.getValue(),
+    cell: info => info.getValue().length,
   }),
 ]
 
