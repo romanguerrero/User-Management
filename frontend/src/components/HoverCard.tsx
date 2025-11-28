@@ -42,7 +42,7 @@ export default function HoverCard({ title, content, children }: HoverCardProps) 
         id={idRef.current}
         role="tooltip"
         className="z-50 max-w-xs rounded bg-gray-800 p-3 text-sm text-gray-100 shadow-lg"
-        style={{ position: 'absolute', left: pos.left, top: pos.top }}
+        style={{ position: 'fixed', left: pos.left, top: pos.top }}
       >
         {title ? <div className="font-semibold mb-1">{title}</div> : null}
         {content ? <div className="whitespace-normal">{content}</div> : null}
