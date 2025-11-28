@@ -8,8 +8,10 @@ import {
 import { useQuery } from '@apollo/client/react'
 import { GetUsersDocument, type GetUsersQuery } from '../../__generated__/graphql'
 import { useState } from 'react'
+import HoverCard from '../HoverCard'
 
 import { TableFilters } from './TableFilters'
+import { max } from 'rxjs'
 
 const columnHelper = createColumnHelper<GetUsersQuery['users'][0]>()
 
@@ -36,7 +38,36 @@ const columns = [
   }),
   columnHelper.accessor('posts', {
     header: 'Post Count',
-    cell: info => info.getValue().length,
+    cell: info => {
+      const posts = info.getValue() as unknown as Array<{ title?: string; content?: string }>
+      const count = posts?.length ?? 0
+
+      const truncate = (text: string, maxLength: 300) => 
+        text.length > maxLength ? text.slice(0, maxLength) + '...' : text
+
+      const content = (
+        <div className="space-y-2">
+          {posts && posts.length > 0 ? (
+            posts.slice(0, 3).map((p, i) => (
+              <div key={i}>
+                <div className="font-semibold">{p.title ?? 'Untitled'}</div>
+                <div className="text-xs text-gray-300">
+                  {truncate(p.content ?? 'No content', 300)}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-sm text-gray-300">No posts</div>
+          )}
+        </div>
+      )
+
+      return (
+        <HoverCard title={`${count} post${count === 1 ? '' : 's'}`} content={content}>
+          <span className="text-indigo-300">{count}</span>
+        </HoverCard>
+      )
+    },
   }),
 ]
 
