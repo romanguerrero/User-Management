@@ -31,7 +31,9 @@ export default function HoverCard({ title, content, children }: HoverCardProps) 
     const top = rect.bottom + scrollY + 8
     // keep tooltip inside viewport
     if (left + tooltipWidth > window.innerWidth + scrollX) {
-      left = Math.max(scrollX + 8, window.innerWidth + scrollX - tooltipWidth - 8)
+      let l1 = scrollX + 8
+      let l2 = window.innerWidth + scrollX - tooltipWidth - 8
+      left = Math.max(l1, l2)
     }
     setPos({ left, top })
   }, [visible])
