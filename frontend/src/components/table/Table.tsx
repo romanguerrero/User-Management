@@ -42,7 +42,7 @@ const columns = [
       const posts = info.getValue() as unknown as Array<{ title?: string; content?: string }>
       const count = posts?.length ?? 0
 
-      const truncate = (text: string, maxLength: 300) => 
+      const truncate = (text: string, maxLength: 100) => 
         text.length > maxLength ? text.slice(0, maxLength) + '...' : text
 
       const content = (
@@ -52,7 +52,7 @@ const columns = [
               <div key={i}>
                 <div className="font-semibold">{p.title ?? 'Untitled'}</div>
                 <div className="text-xs text-gray-300">
-                  {truncate(p.content ?? 'No content', 300)}
+                  {truncate(p.content ?? 'No content', 100)}
                 </div>
               </div>
             ))
