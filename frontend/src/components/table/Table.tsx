@@ -2,11 +2,10 @@ import { memo, useEffect, useState } from 'react'
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable, } from '@tanstack/react-table'
 import { useQuery } from '@apollo/client/react'
 import { GetUsersDocument, type GetUsersQuery } from '../../__generated__/graphql'
-import HoverCard from '../HoverCard'
 import { TableFilters } from './TableFilters'
 import { LoadingSpinner } from '../LoadingSpinner'
 import { GenericCell } from "./cells/GenericCell";
-
+import { PostCell } from "./cells/PostCell";
 
 const columnHelper = createColumnHelper<GetUsersQuery['users'][0]>()
 
@@ -31,39 +30,10 @@ const columns = [
     header: 'Phone',
     cell: (info: any) => <GenericCell value={info.getValue()} />,
   }),
-  columnHelper.accessor('posts', {
-    header: 'Post Count',
-    cell: info => {
-      const posts = info.getValue() as unknown as Array<{ title?: string; content?: string }>
-      const count = posts?.length ?? 0
-
-      const truncate = (text: string, maxLength: 100) => 
-        text.length > maxLength ? text.slice(0, maxLength) + '...' : text
-
-      const content = (
-        <div className="space-y-2">
-          {posts && posts.length > 0 ? (
-            posts.slice(0, 3).map((p, i) => (
-              <div key={i}>
-                <div className="font-semibold">{p.title ?? 'Untitled'}</div>
-                <div className="text-xs text-gray-300">
-                  {truncate(p.content ?? 'No content', 100)}
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="text-sm text-gray-300">No posts</div>
-          )}
-        </div>
-      )
-
-      return (
-        <HoverCard title={`${count} post${count === 1 ? '' : 's'}`} content={content}>
-          <span className="text-indigo-300">{count}</span>
-        </HoverCard>
-      )
-    },
-  }),
+  columnHelper.accessor("posts", {
+    header: "Post Count",
+    cell: (info: any) => <PostCell posts={info.getValue()} />,
+    }),
 ]
 
 const TableContent = memo(() => {
