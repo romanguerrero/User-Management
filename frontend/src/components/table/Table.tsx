@@ -1,17 +1,11 @@
-import { memo } from 'react'
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from '@tanstack/react-table'
+import { memo, useEffect, useState } from 'react'
+import { createColumnHelper, flexRender, getCoreRowModel, useReactTable, } from '@tanstack/react-table'
 import { useQuery } from '@apollo/client/react'
 import { GetUsersDocument, type GetUsersQuery } from '../../__generated__/graphql'
-import { useState } from 'react'
 import HoverCard from '../HoverCard'
-
 import { TableFilters } from './TableFilters'
-import { max } from 'rxjs'
+import { LoadingSpinner } from '../LoadingSpinner'
+
 
 const columnHelper = createColumnHelper<GetUsersQuery['users'][0]>()
 
@@ -85,8 +79,21 @@ const TableContent = memo(() => {
     columns,
     getCoreRowModel: getCoreRowModel(),
   })
-  
-  if (loading) return <div className="p-4">Loading users...</div>
+
+  // Force a minimum loading time to see spinner
+  const [forceLoading, setForceLoading] = useState(true);
+  useEffect(() => {
+    const timer = setTimeout(() => setForceLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+  const showLoading = loading || forceLoading;
+
+  if (showLoading) 
+    return (
+  <> 
+    <LoadingSpinner />
+  </>
+  )
   if (error) return <div className="p-4 text-red-500">Error: {error.message}</div>
 
   return (
