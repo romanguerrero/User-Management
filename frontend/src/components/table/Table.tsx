@@ -5,6 +5,7 @@ import { GetUsersDocument, type GetUsersQuery } from '../../__generated__/graphq
 import HoverCard from '../HoverCard'
 import { TableFilters } from './TableFilters'
 import { LoadingSpinner } from '../LoadingSpinner'
+import { GenericCell } from "./cells/GenericCell";
 
 
 const columnHelper = createColumnHelper<GetUsersQuery['users'][0]>()
@@ -12,23 +13,23 @@ const columnHelper = createColumnHelper<GetUsersQuery['users'][0]>()
 const columns = [
   columnHelper.accessor('id', {
     header: 'ID',
-    cell: info => info.getValue(),
+    cell: (info: any) => <GenericCell value={info.getValue()} />,
   }),
   columnHelper.accessor('name', {
     header: 'Name',
-    cell: info => info.getValue(),
+    cell: (info: any) => <GenericCell value={info.getValue()} />,
   }),
   columnHelper.accessor('age', {
     header: 'Age',
-    cell: info => info.getValue(),
+    cell: (info: any) => <GenericCell value={info.getValue()} />,
   }),
   columnHelper.accessor('email', {
     header: 'Email',
-    cell: info => info.getValue(),
+    cell: (info: any) => <GenericCell value={info.getValue()} />,
   }),
   columnHelper.accessor('phone', {
     header: 'Phone',
-    cell: info => info.getValue(),
+    cell: (info: any) => <GenericCell value={info.getValue()} />,
   }),
   columnHelper.accessor('posts', {
     header: 'Post Count',
