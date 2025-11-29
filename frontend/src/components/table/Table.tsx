@@ -80,6 +80,7 @@ const TableContent = memo(() => {
     getCoreRowModel: getCoreRowModel(),
   })
 
+  // todo: remove forced loading after testing
   // Force a minimum loading time to see spinner
   const [forceLoading, setForceLoading] = useState(true);
   useEffect(() => {
