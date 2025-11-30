@@ -6,7 +6,7 @@ interface Post {
 }
 
 interface PostsCellProps {
-  posts: Post[] | boolean;
+  posts: Post[];
 }
 
 export function PostCell({ posts }: PostsCellProps) {
