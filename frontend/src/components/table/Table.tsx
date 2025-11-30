@@ -63,23 +63,9 @@ const TableContent = memo(() => {
     getCoreRowModel: getCoreRowModel(),
   });
 
-  // todo: remove forced loading after testing
-  // Force a minimum loading time to see spinner
-  const [forceLoading, setForceLoading] = useState(true);
-  useEffect(() => {
-    const timer = setTimeout(() => setForceLoading(false), 1500);
-    return () => clearTimeout(timer);
-  }, []);
-  const showLoading = loading || forceLoading;
 
-  if (showLoading)
-    return (
-      <>
-        <LoadingSpinner />
-      </>
-    );
-  if (error)
-    return <div className="p-4 text-red-500">Error: {error.message}</div>;
+  if (loading) return <LoadingSpinner />;
+  if (error) return <div className="p-4 text-red-500">Error: {error.message}</div>;
 
   return (
     <div className="overflow-x-auto rounded-lg bg-gray-900">
