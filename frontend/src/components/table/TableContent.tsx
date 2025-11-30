@@ -63,8 +63,7 @@ export const TableContent = memo(() => {
   });
 
   if (loading) return <LoadingSpinner />;
-  if (error)
-    return <div className="p-4 text-red-500">Error: {error.message}</div>;
+  if (error) return <div className="p-4 text-red-500">Error: {error.message}</div>;
 
   return (
     <div className="overflow-x-auto rounded-lg bg-gray-900">
