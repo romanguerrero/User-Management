@@ -14,6 +14,12 @@ import { LoadingSpinner } from "../LoadingSpinner";
 import { GenericCell } from "./cells/GenericCell";
 import { PostCell } from "./cells/PostCell";
 
+
+interface TableContentProps {
+  searchValue: string;
+}
+
+
 const columnHelper = createColumnHelper<GetUsersQuery["users"][0]>();
 
 const columns = [
@@ -43,16 +49,15 @@ const columns = [
   }),
 ];
 
-export const TableContent = memo(() => {
-  const {
-    data: usersData,
-    loading,
-    error,
-  } = useQuery(GetUsersDocument, {
+
+export const TableContent = memo(({ searchValue }: TableContentProps) => {
+  const { data: usersData, loading, error } = useQuery(GetUsersDocument, {
     variables: {
-      filters: {},
+      filters: {
+         name: { contains: searchValue || "" },
+      },
     },
-  });
+  })
 
   const data: GetUsersQuery["users"] = usersData?.users ?? [];
 

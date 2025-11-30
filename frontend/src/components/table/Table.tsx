@@ -8,7 +8,7 @@ export const Table = () => {
   return (
     <div className="p-2">
       <TableFilters searchValue={searchValue} setSearchValue={setSearchValue} />
-      <TableContent />
+      <TableContent searchValue={searchValue} />
     </div>
   );
 };
