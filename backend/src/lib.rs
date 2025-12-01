@@ -50,7 +50,7 @@ pub fn filter_builder_derive(input: TokenStream) -> TokenStream {
                         conditions.push(format!("{} = '{}'", #field_name_str, value));
                     }
                     if let Some(ref value) = filter.contains {
-                        conditions.push(format!("{} LIKE '%{}%'", #field_name_str, value));
+                        conditions.push(format!("{} ILIKE '%{}%'", #field_name_str, value));
                     }
                     if let Some(ref value) = filter.starts_with {
                         conditions.push(format!("{} LIKE '{}%'", #field_name_str, value));
