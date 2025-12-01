@@ -31,8 +31,8 @@ export default function HoverCard({ title, content, children }: HoverCardProps) 
     const top = rect.bottom + scrollY + 8
     // keep tooltip inside viewport
     if (left + tooltipWidth > window.innerWidth + scrollX) {
-      let l1 = scrollX + 8
-      let l2 = window.innerWidth + scrollX - tooltipWidth - 8
+      const l1 = scrollX + 8
+      const l2 = window.innerWidth + scrollX - tooltipWidth - 8
       left = Math.max(l1, l2)
     }
     setPos({ left, top })
@@ -59,7 +59,7 @@ export default function HoverCard({ title, content, children }: HoverCardProps) 
 
   return (
     <span
-      ref={setRef as any}
+      ref={setRef}
       tabIndex={0}
       aria-describedby={idRef.current}
       onMouseEnter={() => setVisible(true)}
