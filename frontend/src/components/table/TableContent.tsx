@@ -4,11 +4,13 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
+  type CellContext,
 } from "@tanstack/react-table";
 import { useQuery } from "@apollo/client/react";
 import {
   GetUsersDocument,
   type GetUsersQuery,
+  type User,
 } from "../../__generated__/graphql";
 import { LoadingSpinner } from "../LoadingSpinner";
 import { GenericCell } from "./cells/GenericCell";
@@ -25,23 +27,23 @@ const columnHelper = createColumnHelper<GetUsersQuery["users"][0]>();
 const columns = [
   columnHelper.accessor("id", {
     header: "ID",
-    cell: (info: any) => <GenericCell value={info.getValue()} />,
+    cell: (info: CellContext<User, number>) => <GenericCell value={info.getValue()} />,
   }),
   columnHelper.accessor("name", {
     header: "Name",
-    cell: (info: any) => <GenericCell value={info.getValue()} />,
+    cell: (info: CellContext<User, string>) => <GenericCell value={info.getValue()} />,
   }),
   columnHelper.accessor("age", {
     header: "Age",
-    cell: (info: any) => <GenericCell value={info.getValue()} />,
+    cell: (info: CellContext<User, number>) => <GenericCell value={info.getValue()} />,
   }),
   columnHelper.accessor("email", {
     header: "Email",
-    cell: (info: any) => <GenericCell value={info.getValue()} />,
+    cell: (info: CellContext<User, string>) => <GenericCell value={info.getValue()} />,
   }),
   columnHelper.accessor("phone", {
     header: "Phone",
-    cell: (info: any) => <GenericCell value={info.getValue()} />,
+    cell: (info: CellContext<User, string>) => <GenericCell value={info.getValue()} />,
   }),
   columnHelper.accessor("posts", {
     header: "Post Count",
