@@ -54,7 +54,7 @@ export const TableContent = memo(({ searchValue }: TableContentProps) => {
   const { data: usersData, loading, error } = useQuery(GetUsersDocument, {
     variables: {
       filters: {
-         name: { contains: searchValue || "" },
+         name: { contains: searchValue },
       },
     },
   })
