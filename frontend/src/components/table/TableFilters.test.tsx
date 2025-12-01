@@ -22,4 +22,15 @@ describe('TableFilters', () => {
     fireEvent.change(input, { target: { value: 'new value' } })
     expect(mockSet).toHaveBeenCalledWith('new value')
   })
+
+  it('updates input value when prop changes', () => {
+    const mockSet = vi.fn()
+    const { rerender } = render(<TableFilters searchValue="" setSearchValue={mockSet} />)
+    const input = screen.getByPlaceholderText('Search') as HTMLInputElement
+    expect(input.value).toBe('')
+
+    rerender(<TableFilters searchValue="updated" setSearchValue={mockSet} />)
+    const updatedInput = screen.getByPlaceholderText('Search') as HTMLInputElement
+    expect(updatedInput.value).toBe('updated')
+  })
 })
