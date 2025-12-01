@@ -51,12 +51,17 @@ const columns = [
 
 
 export const TableContent = memo(({ searchValue }: TableContentProps) => {
+
   const { data: usersData, loading, error } = useQuery(GetUsersDocument, {
-    variables: {
+    variables: { 
       filters: {
-         name: { contains: searchValue },
-      },
-    },
+        id: { equals: Number(searchValue) },
+        age: { equals: Number(searchValue) },        
+        name: { contains: searchValue },
+        email: { contains: searchValue },
+        phone: { contains: searchValue },
+      }
+    }, 
   })
 
   const data: GetUsersQuery["users"] = usersData?.users ?? [];

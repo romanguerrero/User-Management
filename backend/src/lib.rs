@@ -75,7 +75,7 @@ pub fn filter_builder_derive(input: TokenStream) -> TokenStream {
                 if conditions.is_empty() {
                     "".to_string()
                 } else {
-                    format!(" WHERE {}", conditions.join(" AND "))
+                    format!(" WHERE {}", conditions.join(" OR "))
                 }
             }
         }
