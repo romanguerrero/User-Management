@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { useTheme } from "../../../contexts/ThemeContext";
 
 type TableFiltersProps = {
     searchValue: string
@@ -11,7 +12,12 @@ const SearchIcon = () => (
     </svg>
 );
 
-export const TableFilters = memo(({ searchValue, setSearchValue }: TableFiltersProps) => (
+
+
+export const TableFilters = memo(({ searchValue, setSearchValue }: TableFiltersProps) => {
+    const { theme } = useTheme();
+
+    return (
     <div className="relative flex-1 max-w-md">
         <SearchIcon />
         <input 
@@ -19,7 +25,8 @@ export const TableFilters = memo(({ searchValue, setSearchValue }: TableFiltersP
             placeholder="Search users..." 
             value={searchValue} 
             onChange={(e) => setSearchValue(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 bg-white dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" 
-        />
-    </div>
-));
+            className={`w-full pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${theme === 'dark' ? 'bg-gray-800/50 border border-gray-700 text-gray-100 placeholder-gray-500' : 'bg-gray-200 border border-gray-300 text-gray-900 placeholder-gray-500'}`} 
+              />
+        </div>
+    );
+});
