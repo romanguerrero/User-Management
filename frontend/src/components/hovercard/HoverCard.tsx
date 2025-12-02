@@ -7,6 +7,27 @@ type HoverCardProps = {
   children: React.ReactNode
 }
 
+
+function computeTooltipPosition(el: HTMLElement, tooltipWidth = 280) {
+  const rect = el.getBoundingClientRect()
+  const scrollX = window.scrollX || window.pageXOffset
+  const scrollY = window.scrollY || window.pageYOffset
+
+  let left = rect.left + scrollX
+  const top = rect.bottom + scrollY + 8
+
+  // keep tooltip inside viewport
+  const maxLeft = window.innerWidth + scrollX - tooltipWidth - 8
+  const minLeft = scrollX + 8
+
+  if (left + tooltipWidth > window.innerWidth + scrollX) {
+    left = Math.max(minLeft, maxLeft)
+  }
+
+  return { left, top }
+}
+
+
 export default function HoverCard({ title, content, children }: HoverCardProps) {
   const triggerRef = useRef<HTMLElement | null>(null)
   const [visible, setVisible] = useState(false)
@@ -22,20 +43,9 @@ export default function HoverCard({ title, content, children }: HoverCardProps) 
   }, [])
 
   useEffect(() => {
-    if (!visible || !triggerRef.current) return
-    const rect = triggerRef.current.getBoundingClientRect()
-    const tooltipWidth = 280
-    const scrollX = window.scrollX || window.pageXOffset
-    const scrollY = window.scrollY || window.pageYOffset
-    let left = rect.left + scrollX
-    const top = rect.bottom + scrollY + 8
-    // keep tooltip inside viewport
-    if (left + tooltipWidth > window.innerWidth + scrollX) {
-      const l1 = scrollX + 8
-      const l2 = window.innerWidth + scrollX - tooltipWidth - 8
-      left = Math.max(l1, l2)
+    if (visible && triggerRef.current) {
+      setPos(computeTooltipPosition(triggerRef.current))
     }
-    setPos({ left, top })
   }, [visible])
 
   const tooltip = visible ? (
