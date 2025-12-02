@@ -8,19 +8,23 @@ type HoverCardProps = {
 }
 
 
-function computeTooltipPosition(el: HTMLElement, tooltipWidth = 280) {
+
+function computeTooltipPosition(el: HTMLElement) {
+  const TOOLTIP_WIDTH = 280
+  const VIEWPORT_PADDING = 8
+  const TRIGGER_GAP = 8  
+
   const rect = el.getBoundingClientRect()
   const scrollX = window.scrollX || window.pageXOffset
   const scrollY = window.scrollY || window.pageYOffset
 
   let left = rect.left + scrollX
-  const top = rect.bottom + scrollY + 8
+  const top = rect.bottom + scrollY + TRIGGER_GAP
 
-  // keep tooltip inside viewport
-  const maxLeft = window.innerWidth + scrollX - tooltipWidth - 8
-  const minLeft = scrollX + 8
+  const maxLeft = window.innerWidth + scrollX - TOOLTIP_WIDTH - VIEWPORT_PADDING
+  const minLeft = scrollX + VIEWPORT_PADDING
 
-  if (left + tooltipWidth > window.innerWidth + scrollX) {
+  if (left + TOOLTIP_WIDTH > window.innerWidth + scrollX) {
     left = Math.max(minLeft, maxLeft)
   }
 
