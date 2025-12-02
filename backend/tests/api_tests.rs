@@ -1,32 +1,39 @@
 ﻿use async_graphql::{EmptyMutation, EmptySubscription, Schema, Value};
 use sqlx::{PgPool, postgres::PgPoolOptions};
 use std::env;
+use tokio::sync::OnceCell;
 
 #[path = "../src/resolvers.rs"]
 mod resolvers;
 
 use resolvers::Query;
 
+// Shared database pool for all tests
+static DB_POOL: OnceCell<PgPool> = OnceCell::const_new();
+
 // Helper functions
-async fn setup_test_db() -> Result<PgPool, sqlx::Error> {
-    let database_url = env::var("DATABASE_URL")
-        .unwrap_or_else(|_| "postgres://postgres:password@localhost:5432/graphql_db".to_string());
-    
-    println!("Initializing postgres Pool with URL: {}", database_url);
-    
-    let pool = PgPoolOptions::new()
-        .max_connections(10)
-        .connect(&database_url)
-        .await?;
-    
-    println!("Postgres successfully connected.");
-    
-    Ok(pool)
+async fn get_test_db_pool() -> &'static PgPool {
+    DB_POOL.get_or_init(|| async {
+        let database_url = env::var("DATABASE_URL")
+            .unwrap_or_else(|_| "postgres://postgres:password@localhost:5432/graphql_db".to_string());
+
+        println!("Initializing postgres Pool with URL: {}", database_url);
+
+        let pool = PgPoolOptions::new()
+            .max_connections(10)
+            .connect(&database_url)
+            .await
+            .expect("Failed to connect to database");
+
+        println!("Postgres successfully connected.");
+
+        pool
+    }).await
 }
 
-fn create_test_schema(pool: PgPool) -> Schema<Query, EmptyMutation, EmptySubscription> {
+fn create_test_schema(pool: &PgPool) -> Schema<Query, EmptyMutation, EmptySubscription> {
     Schema::build(Query, EmptyMutation, EmptySubscription)
-        .data(pool)
+        .data(pool.clone())
         .finish()
 }
 
@@ -118,7 +125,7 @@ async fn execute_query_and_extract_users(schema: &Schema<Query, EmptyMutation, E
 // user query tests
 #[tokio::test]
 async fn test_users_query_with_empty_filters() {
-    let pool = setup_test_db().await.expect("Failed to setup test database");
+    let pool = get_test_db_pool().await;
     let schema = create_test_schema(pool);
 
     let query = r#"
@@ -157,7 +164,7 @@ async fn test_users_query_with_empty_filters() {
 
 #[tokio::test]
 async fn test_users_query_filter_by_id_equals() {
-    let pool = setup_test_db().await.expect("Failed to setup test database");
+    let pool = get_test_db_pool().await;
     let schema = create_test_schema(pool);
 
     let query = r#"
@@ -186,7 +193,7 @@ async fn test_users_query_filter_by_id_equals() {
 
 #[tokio::test]
 async fn test_users_query_filter_by_age_equals() {
-    let pool = setup_test_db().await.expect("Failed to setup test database");
+    let pool = get_test_db_pool().await;
     let schema = create_test_schema(pool);
 
     let query = r#"
@@ -213,7 +220,7 @@ async fn test_users_query_filter_by_age_equals() {
 
 #[tokio::test]
 async fn test_users_query_filter_by_name_contains() {
-    let pool = setup_test_db().await.expect("Failed to setup test database");
+    let pool = get_test_db_pool().await;
     let schema = create_test_schema(pool);
 
     let query = r#"
@@ -241,7 +248,7 @@ async fn test_users_query_filter_by_name_contains() {
 
 #[tokio::test]
 async fn test_users_query_filter_by_email_contains() {
-    let pool = setup_test_db().await.expect("Failed to setup test database");
+    let pool = get_test_db_pool().await;
     let schema = create_test_schema(pool);
 
     let query = r#"
@@ -267,7 +274,7 @@ async fn test_users_query_filter_by_email_contains() {
 
 #[tokio::test]
 async fn test_users_query_filter_by_phone_contains() {
-    let pool = setup_test_db().await.expect("Failed to setup test database");
+    let pool = get_test_db_pool().await;
     let schema = create_test_schema(pool);
 
     let query = r#"
@@ -296,7 +303,7 @@ async fn test_users_query_filter_by_phone_contains() {
 
 #[tokio::test]
 async fn test_users_query_filter_multiple_combined() {
-    let pool = setup_test_db().await.expect("Failed to setup test database");
+    let pool = get_test_db_pool().await;
     let schema = create_test_schema(pool);
 
     let query = r#"
@@ -329,7 +336,7 @@ async fn test_users_query_filter_multiple_combined() {
 
 #[tokio::test]
 async fn test_users_query_filter_empty_result() {
-    let pool = setup_test_db().await.expect("Failed to setup test database");
+    let pool = get_test_db_pool().await;
     let schema = create_test_schema(pool);
 
     let query = r#"
