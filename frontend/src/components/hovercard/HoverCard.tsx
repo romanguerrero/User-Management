@@ -7,11 +7,10 @@ type HoverCardProps = {
   children: React.ReactNode
 }
 
-
 function computeTooltipPosition(el: HTMLElement) {
   const TOOLTIP_WIDTH = 280
   const VIEWPORT_PADDING = 8
-  const TRIGGER_GAP = 8  
+  const TRIGGER_GAP = 8
 
   const rect = el.getBoundingClientRect()
   const scrollX = window.scrollX || window.pageXOffset
@@ -29,7 +28,6 @@ function computeTooltipPosition(el: HTMLElement) {
 
   return { left, top }
 }
-
 
 export function HoverCard({ title, content, children }: HoverCardProps) {
   const triggerRef = useRef<HTMLElement | null>(null)
@@ -59,7 +57,7 @@ export function HoverCard({ title, content, children }: HoverCardProps) {
       title={title}
       content={content}
     />
-) : null
+  ) : null
 
   const setRef = (el: HTMLElement | null) => {
     triggerRef.current = el
@@ -74,7 +72,7 @@ export function HoverCard({ title, content, children }: HoverCardProps) {
       onMouseLeave={() => setVisible(false)}
       onFocus={() => setVisible(true)}
       onBlur={() => setVisible(false)}
-      className="inline-flex items-center"
+      className='inline-flex items-center'
     >
       {children}
       {tooltip}
