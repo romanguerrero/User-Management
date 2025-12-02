@@ -8,6 +8,9 @@ mod resolvers;
 
 use resolvers::Query;
 
+
+// Note: Assumes modified init.sql has been ran to populate new test users
+
 // Shared database pool for all tests
 static DB_POOL: OnceCell<PgPool> = OnceCell::const_new();
 
