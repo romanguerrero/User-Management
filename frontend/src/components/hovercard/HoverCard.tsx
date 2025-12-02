@@ -67,7 +67,6 @@ export function HoverCard({ title, content, children }: HoverCardProps) {
   return (
     <span
       ref={triggerRef}
-      tabIndex={0}
       aria-describedby={id}
       onMouseEnter={handleShow}
       onMouseLeave={handleHide}

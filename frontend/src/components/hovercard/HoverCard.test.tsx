@@ -88,8 +88,8 @@ describe('HoverCard', () => {
       </HoverCard>
     );
     
-    const trigger = screen.getByText('Hover Me').parentElement;
-    fireEvent.focus(trigger!);
+    const button = screen.getByText('Hover Me');
+    fireEvent.focus(button);
     
     await waitFor(() => {
       expect(screen.getByRole('tooltip')).toBeTruthy();
@@ -103,14 +103,14 @@ describe('HoverCard', () => {
       </HoverCard>
     );
     
-    const trigger = screen.getByText('Hover Me').parentElement;
-    fireEvent.focus(trigger!);
+    const button = screen.getByText('Hover Me');
+    fireEvent.focus(button);
     
     await waitFor(() => {
       expect(screen.getByRole('tooltip')).toBeTruthy();
     });
     
-    fireEvent.blur(trigger!);
+    fireEvent.blur(button);
     
     await waitFor(() => {
       expect(screen.queryByRole('tooltip')).toBeNull();
@@ -136,17 +136,6 @@ describe('HoverCard', () => {
     await waitFor(() => {
       expect(screen.queryByRole('tooltip')).toBeNull();
     });
-  });
-
-  it('trigger element is keyboard focusable', () => {
-    render(
-      <HoverCard title="Test Title" content="Test Content">
-        <button>Hover Me</button>
-      </HoverCard>
-    );
-    
-    const trigger = screen.getByText('Hover Me').parentElement;
-    expect(trigger?.getAttribute('tabIndex')).toBe('0');
   });
 
   it('renders without title', async () => {
@@ -223,7 +212,7 @@ describe('HoverCard', () => {
   });
 
   it('computes tooltip position correctly', async () => {
-    const { container } = render(
+    render(
       <HoverCard title="Test Title" content="Test Content">
         <button>Hover Me</button>
       </HoverCard>
