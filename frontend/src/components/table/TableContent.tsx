@@ -19,9 +19,14 @@ interface TableContentProps {
 
 
 export const TableContent = memo(({ searchValue }: TableContentProps) => {
+  const isNumeric = !isNaN(Number(searchValue)) && searchValue.trim() !== '';
+  const numericValue = isNumeric ? Number(searchValue) : undefined;
+
   const filters = {
-    id: { equals: Number(searchValue) },
-    age: { equals: Number(searchValue) },        
+    ...(numericValue && { 
+      id: { equals: numericValue },
+      age: { equals: numericValue }
+    }),
     name: { contains: searchValue },
     email: { contains: searchValue },
     phone: { contains: searchValue },
