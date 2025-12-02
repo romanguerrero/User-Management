@@ -59,6 +59,54 @@ fn extract_users_from_response(response: &Value) -> &Vec<Value> {
     }
 }
 
+fn get_string_field<'a>(obj: &'a Value, field: &str) -> &'a str {
+    if let Value::Object(user_obj) = obj {
+        if let Some(Value::String(value)) = user_obj.get(field) {
+            return value.as_str();
+        }
+    }
+    panic!("Expected string field '{}' not found", field);
+}
+
+fn get_number_field(obj: &Value, field: &str) -> i64 {
+    if let Value::Object(user_obj) = obj {
+        if let Some(Value::Number(value)) = user_obj.get(field) {
+            return value.as_i64().expect(&format!("Field '{}' should be a valid i64", field));
+        }
+    }
+    panic!("Expected number field '{}' not found", field);
+}
+
+fn extract_user_names(users: &[Value]) -> Vec<String> {
+    users.iter()
+        .filter_map(|u| {
+            if let Value::Object(obj) = u {
+                if let Some(Value::String(name)) = obj.get("name") {
+                    return Some(name.to_string());
+                }
+            }
+            None
+        })
+        .collect()
+}
+
+fn assert_users_contain_names(users: &[Value], expected_names: &[&str]) {
+    let user_names = extract_user_names(users);
+    for expected in expected_names {
+        assert!(
+            user_names.contains(&expected.to_string()),
+            "Should include {}",
+            expected
+        );
+    }
+}
+
+async fn execute_query_and_extract_users(schema: &Schema<Query, EmptyMutation, EmptySubscription>, query: &str) -> Vec<Value> {
+    let response = schema.execute(query).await;
+    assert!(response.errors.is_empty(), "Query returned errors: {:?}", response.errors);
+    extract_users_from_response(&response.data).clone()
+}
+
 #[tokio::test]
 async fn test_users_query_with_empty_filters() {
     let pool = setup_test_db().await.expect("Failed to setup test database");
@@ -117,36 +165,14 @@ async fn test_users_query_filter_by_id_equals() {
         }
     "#;
 
-    let response = schema.execute(query).await;
-
-    assert!(response.errors.is_empty(), "Query returned errors: {:?}", response.errors);
-
-    let users = extract_users_from_response(&response.data);
+    let users = execute_query_and_extract_users(&schema, query).await;
     assert_eq!(users.len(), 1, "Should return exactly 1 user with ID 2");
 
-    if let Some(Value::Object(user)) = users.first() {
-        if let Some(Value::Number(id)) = user.get("id") {
-            assert_eq!(id.as_i64(), Some(2), "User ID should be 2");
-        } else {
-            panic!("User should have an 'id' field with a number value");
-        }
-
-        if let Some(Value::String(name)) = user.get("name") {
-            assert_eq!(name.as_str(), "Jane Smith", "User name should be 'Jane Smith'");
-        } else {
-            panic!("User should have a 'name' field with a string value");
-        }
-
-        if let Some(Value::String(email)) = user.get("email") {
-            assert_eq!(email.as_str(), "jane.smith@example.com", "User email should match");
-        } else {
-            panic!("User should have an 'email' field with a string value");
-        }
-
-        assert_user_has_required_fields(&Value::Object(user.clone()));
-    } else {
-        panic!("First user should be an object");
-    }
+    let user = &users[0];
+    assert_eq!(get_number_field(user, "id"), 2, "User ID should be 2");
+    assert_eq!(get_string_field(user, "name"), "Jane Smith", "User name should be 'Jane Smith'");
+    assert_eq!(get_string_field(user, "email"), "jane.smith@example.com", "User email should match");
+    assert_user_has_required_fields(user);
 }
 
 #[tokio::test]
@@ -165,41 +191,15 @@ async fn test_users_query_filter_by_age_equals() {
         }
     "#;
 
-    let response = schema.execute(query).await;
-
-    assert!(response.errors.is_empty(), "Query returned errors: {:?}", response.errors);
-
-    let users = extract_users_from_response(&response.data);
+    let users = execute_query_and_extract_users(&schema, query).await;
     assert_eq!(users.len(), 3, "Should return exactly 3 users with age 35");
 
-    for user in users {
-        if let Value::Object(user_obj) = user {
-            if let Some(Value::Number(age)) = user_obj.get("age") {
-                assert_eq!(age.as_i64(), Some(35), "All returned users should have age 35");
-            } else {
-                panic!("User should have an 'age' field with a number value");
-            }
-
-            assert_user_has_required_fields(user);
-        } else {
-            panic!("User should be an object");
-        }
+    for user in &users {
+        assert_eq!(get_number_field(user, "age"), 35, "All returned users should have age 35");
+        assert_user_has_required_fields(user);
     }
 
-    let user_names: Vec<String> = users.iter()
-        .filter_map(|u| {
-            if let Value::Object(obj) = u {
-                if let Some(Value::String(name)) = obj.get("name") {
-                    return Some(name.to_string());
-                }
-            }
-            None
-        })
-        .collect();
-
-    assert!(user_names.contains(&"Bob Johnson".to_string()), "Should include Bob Johnson");
-    assert!(user_names.contains(&"Angela Schmidt".to_string()), "Should include Angela Schmidt");
-    assert!(user_names.contains(&"Jessica Rodriguez".to_string()), "Should include Jessica Rodriguez");
+    assert_users_contain_names(&users, &["Bob Johnson", "Angela Schmidt", "Jessica Rodriguez"]);
 }
 
 #[tokio::test]
@@ -218,40 +218,16 @@ async fn test_users_query_filter_by_name_contains() {
         }
     "#;
 
-    let response = schema.execute(query).await;
-
-    assert!(response.errors.is_empty(), "Query returned errors: {:?}", response.errors);
-
-    let users = extract_users_from_response(&response.data);
+    let users = execute_query_and_extract_users(&schema, query).await;
     assert_eq!(users.len(), 2, "Should return exactly 2 users with 'John' in their name");
 
-    for user in users {
-        if let Value::Object(user_obj) = user {
-            if let Some(Value::String(name)) = user_obj.get("name") {
-                assert!(name.contains("John"), "User name '{}' should contain 'John'", name);
-            } else {
-                panic!("User should have a 'name' field with a string value");
-            }
-
-            assert_user_has_required_fields(user);
-        } else {
-            panic!("User should be an object");
-        }
+    for user in &users {
+        let name = get_string_field(user, "name");
+        assert!(name.contains("John"), "User name '{}' should contain 'John'", name);
+        assert_user_has_required_fields(user);
     }
 
-    let user_names: Vec<String> = users.iter()
-        .filter_map(|u| {
-            if let Value::Object(obj) = u {
-                if let Some(Value::String(name)) = obj.get("name") {
-                    return Some(name.to_string());
-                }
-            }
-            None
-        })
-        .collect();
-
-    assert!(user_names.contains(&"John Doe".to_string()), "Should include John Doe");
-    assert!(user_names.contains(&"Bob Johnson".to_string()), "Should include Bob Johnson");
+    assert_users_contain_names(&users, &["John Doe", "Bob Johnson"]);
 }
 
 #[tokio::test]
@@ -270,25 +246,13 @@ async fn test_users_query_filter_by_email_contains() {
         }
     "#;
 
-    let response = schema.execute(query).await;
-
-    assert!(response.errors.is_empty(), "Query returned errors: {:?}", response.errors);
-
-    let users = extract_users_from_response(&response.data);
+    let users = execute_query_and_extract_users(&schema, query).await;
     assert_eq!(users.len(), 7, "Should return 7 users with 'example.com' in their email");
 
-    for user in users {
-        if let Value::Object(user_obj) = user {
-            if let Some(Value::String(email)) = user_obj.get("email") {
-                assert!(email.contains("example.com"), "User email '{}' should contain 'example.com'", email);
-            } else {
-                panic!("User should have an 'email' field with a string value");
-            }
-
-            assert_user_has_required_fields(user);
-        } else {
-            panic!("User should be an object");
-        }
+    for user in &users {
+        let email = get_string_field(user, "email");
+        assert!(email.contains("example.com"), "User email '{}' should contain 'example.com'", email);
+        assert_user_has_required_fields(user);
     }
 }
 
@@ -309,41 +273,16 @@ async fn test_users_query_filter_by_phone_contains() {
         }
     "#;
 
-    let response = schema.execute(query).await;
-
-    assert!(response.errors.is_empty(), "Query returned errors: {:?}", response.errors);
-
-    let users = extract_users_from_response(&response.data);
+    let users = execute_query_and_extract_users(&schema, query).await;
     assert_eq!(users.len(), 3, "Should return exactly 3 users with '555' in their phone number");
 
-    for user in users {
-        if let Value::Object(user_obj) = user {
-            if let Some(Value::String(phone)) = user_obj.get("phone") {
-                assert!(phone.contains("555"), "User phone '{}' should contain '555'", phone);
-            } else {
-                panic!("User should have a 'phone' field with a string value");
-            }
-
-            assert_user_has_required_fields(user);
-        } else {
-            panic!("User should be an object");
-        }
+    for user in &users {
+        let phone = get_string_field(user, "phone");
+        assert!(phone.contains("555"), "User phone '{}' should contain '555'", phone);
+        assert_user_has_required_fields(user);
     }
 
-    let user_names: Vec<String> = users.iter()
-        .filter_map(|u| {
-            if let Value::Object(obj) = u {
-                if let Some(Value::String(name)) = obj.get("name") {
-                    return Some(name.to_string());
-                }
-            }
-            None
-        })
-        .collect();
-
-    assert!(user_names.contains(&"Bob Johnson".to_string()), "Should include Bob Johnson");
-    assert!(user_names.contains(&"Angela Schmidt".to_string()), "Should include Angela Schmidt");
-    assert!(user_names.contains(&"Jessica Rodriguez".to_string()), "Should include Jessica Rodriguez");
+    assert_users_contain_names(&users, &["Bob Johnson", "Angela Schmidt", "Jessica Rodriguez"]);
 }
 
 #[tokio::test]
@@ -366,47 +305,17 @@ async fn test_users_query_filter_multiple_combined() {
         }
     "#;
 
-    let response = schema.execute(query).await;
-
-    assert!(response.errors.is_empty(), "Query returned errors: {:?}", response.errors);
-
-    let users = extract_users_from_response(&response.data);
+    let users = execute_query_and_extract_users(&schema, query).await;
     assert_eq!(users.len(), 3, "Should return exactly 3 users matching age=35 and phone contains '555'");
 
-    for user in users {
-        if let Value::Object(user_obj) = user {
-            if let Some(Value::Number(age)) = user_obj.get("age") {
-                assert_eq!(age.as_i64(), Some(35), "User should have age 35");
-            } else {
-                panic!("User should have an 'age' field with a number value");
-            }
-
-            if let Some(Value::String(phone)) = user_obj.get("phone") {
-                assert!(phone.contains("555"), "User phone '{}' should contain '555'", phone);
-            } else {
-                panic!("User should have a 'phone' field with a string value");
-            }
-
-            assert_user_has_required_fields(user);
-        } else {
-            panic!("User should be an object");
-        }
+    for user in &users {
+        assert_eq!(get_number_field(user, "age"), 35, "User should have age 35");
+        let phone = get_string_field(user, "phone");
+        assert!(phone.contains("555"), "User phone '{}' should contain '555'", phone);
+        assert_user_has_required_fields(user);
     }
 
-    let user_names: Vec<String> = users.iter()
-        .filter_map(|u| {
-            if let Value::Object(obj) = u {
-                if let Some(Value::String(name)) = obj.get("name") {
-                    return Some(name.to_string());
-                }
-            }
-            None
-        })
-        .collect();
-
-    assert!(user_names.contains(&"Bob Johnson".to_string()), "Should include Bob Johnson");
-    assert!(user_names.contains(&"Angela Schmidt".to_string()), "Should include Angela Schmidt");
-    assert!(user_names.contains(&"Jessica Rodriguez".to_string()), "Should include Jessica Rodriguez");
+    assert_users_contain_names(&users, &["Bob Johnson", "Angela Schmidt", "Jessica Rodriguez"]);
 }
 
 #[tokio::test]
@@ -425,11 +334,7 @@ async fn test_users_query_filter_empty_result() {
         }
     "#;
 
-    let response = schema.execute(query).await;
-
-    assert!(response.errors.is_empty(), "Query returned errors: {:?}", response.errors);
-
-    let users = extract_users_from_response(&response.data);
+    let users = execute_query_and_extract_users(&schema, query).await;
     assert_eq!(users.len(), 0, "Should return 0 users when no matches are found");
 }
 
