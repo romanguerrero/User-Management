@@ -1,10 +1,12 @@
+import { memo } from "react";
+
 type CellValue = string | number | boolean | Date | null | undefined;
 
 interface GenericCellProps {
   value?: CellValue;
 }
 
-export function GenericCell({ value }: GenericCellProps) {
+export const GenericCell = memo(({ value }: GenericCellProps) => {
   if (value == null) {
     return <td>-</td>; 
   }
@@ -28,4 +30,4 @@ export function GenericCell({ value }: GenericCellProps) {
     default:
       return <td>{String(value)}</td>;
   }
-}
+});
