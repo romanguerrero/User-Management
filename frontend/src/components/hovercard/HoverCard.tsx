@@ -59,13 +59,9 @@ export function HoverCard({ title, content, children }: HoverCardProps) {
     />
   ) : null
 
-  const setRef = (el: HTMLElement | null) => {
-    triggerRef.current = el
-  }
-
   return (
     <span
-      ref={setRef}
+      ref={triggerRef}
       tabIndex={0}
       aria-describedby={id}
       onMouseEnter={() => setVisible(true)}
