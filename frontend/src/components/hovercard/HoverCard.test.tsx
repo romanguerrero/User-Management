@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/react';
 import { HoverCard } from './HoverCard';
+import type { ReactNode } from 'react';
 
 // Test constants
 const MOCK_VIEWPORT = { width: 1024, height: 768 };
@@ -15,8 +16,8 @@ const MOCK_TRIGGER_BOUNDS = {
 
 // Test helpers
 const renderHoverCard = (props: {
-  title?: React.ReactNode;
-  content?: React.ReactNode;
+  title?: ReactNode;
+  content?: ReactNode;
 }) => {
   return render(
     <HoverCard {...props}>
