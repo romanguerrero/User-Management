@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { flexRender, type HeaderGroup } from "@tanstack/react-table";
 import type { User } from "../../__generated__/graphql";
 
@@ -5,7 +6,7 @@ interface TableHeaderProps {
   headerGroups: HeaderGroup<User>[];
 }
 
-export const TableHeader = ({ headerGroups }: TableHeaderProps) => {
+export const TableHeader = memo(({ headerGroups }: TableHeaderProps) => {
   return (
     <thead className="bg-gray-800">
       {headerGroups.map((headerGroup) => (
@@ -27,4 +28,4 @@ export const TableHeader = ({ headerGroups }: TableHeaderProps) => {
       ))}
     </thead>
   );
-};
+});

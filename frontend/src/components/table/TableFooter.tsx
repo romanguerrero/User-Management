@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { flexRender, type HeaderGroup } from "@tanstack/react-table";
 import type { User } from "../../__generated__/graphql";
 
@@ -5,7 +6,7 @@ interface TableFooterProps {
   footerGroups: HeaderGroup<User>[];
 }
 
-export const TableFooter = ({ footerGroups }: TableFooterProps) => {
+export const TableFooter = memo(({ footerGroups }: TableFooterProps) => {
   return (
     <tfoot className="bg-gray-800">
       {footerGroups.map((footerGroup) => (
@@ -27,4 +28,4 @@ export const TableFooter = ({ footerGroups }: TableFooterProps) => {
       ))}
     </tfoot>
   );
-};
+});

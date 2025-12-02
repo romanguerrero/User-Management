@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { flexRender, type Row } from "@tanstack/react-table";
 import type { User } from "../../__generated__/graphql";
 
@@ -5,7 +6,7 @@ interface TableBodyProps {
   rows: Row<User>[];
 }
 
-export const TableBody = ({ rows }: TableBodyProps) => {
+export const TableBody = memo(({ rows }: TableBodyProps) => {
   return (
     <tbody className="bg-transparent">
       {rows.map((row) => (
@@ -22,4 +23,4 @@ export const TableBody = ({ rows }: TableBodyProps) => {
       ))}
     </tbody>
   );
-};
+});
