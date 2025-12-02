@@ -22,4 +22,3 @@ export function Tooltip({ id, left, top, title, content }: TooltipContentProps) 
     document.body
   )
 }
-
