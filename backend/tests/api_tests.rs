@@ -100,3 +100,76 @@ async fn test_users_query_with_empty_filters() {
         assert_user_has_required_fields(first_user);
     }
 }
+
+#[tokio::test]
+async fn test_users_query_filter_by_id_equals() {
+    let pool = setup_test_db().await.expect("Failed to setup test database");
+    let schema = create_test_schema(pool);
+
+    // Test filtering by exact ID match (user ID: 2 - Jane Smith)
+    let query = r#"
+        query {
+            users (filters: { id: { equals: 2 } }) {
+                id
+                name
+                age
+                email
+                phone
+                createdAt
+                updatedAt
+            }
+        }
+    "#;
+
+    let response = schema.execute(query).await;
+
+    // Validate response has no errors
+    assert!(response.errors.is_empty(), "Query returned errors: {:?}", response.errors);
+
+    let users = extract_users_from_response(&response.data);
+
+    // Should return exactly 1 user
+    assert_eq!(users.len(), 1, "Should return exactly 1 user with ID 2");
+
+    // Validate the returned user
+    if let Some(Value::Object(user)) = users.first() {
+        // Check ID is exactly 2
+        if let Some(Value::Number(id)) = user.get("id") {
+            assert_eq!(
+                id.as_i64(),
+                Some(2),
+                "User ID should be 2"
+            );
+        } else {
+            panic!("User should have an 'id' field with a number value");
+        }
+
+        // Check name is Jane Smith
+        if let Some(Value::String(name)) = user.get("name") {
+            assert_eq!(
+                name.as_str(),
+                "Jane Smith",
+                "User name should be 'Jane Smith'"
+            );
+        } else {
+            panic!("User should have a 'name' field with a string value");
+        }
+
+        // Check email
+        if let Some(Value::String(email)) = user.get("email") {
+            assert_eq!(
+                email.as_str(),
+                "jane.smith@example.com",
+                "User email should match"
+            );
+        } else {
+            panic!("User should have an 'email' field with a string value");
+        }
+
+        // Validate has all required fields
+        assert_user_has_required_fields(&Value::Object(user.clone()));
+    } else {
+        panic!("First user should be an object");
+    }
+}
+
