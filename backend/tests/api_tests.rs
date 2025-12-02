@@ -32,16 +32,16 @@ fn create_test_schema(pool: PgPool) -> Schema<Query, EmptyMutation, EmptySubscri
 fn assert_user_has_required_fields(user: &Value) {
     let required_fields = ["id", "name", "age", "email"];
 
-    if let Value::Object(user_obj) = user {
-        for field in required_fields {
-            assert!(
-                user_obj.contains_key(field),
-                "User should have '{}' field",
-                field
-            );
-        }
-    } else {
+    let Value::Object(user_obj) = user else {
         panic!("User should be an object");
+    };
+
+    for field in required_fields {
+        assert!(
+            user_obj.contains_key(field),
+            "User should have '{}' field",
+            field
+        );
     }
 }
 
@@ -58,32 +58,41 @@ fn extract_users_from_response(response: &Value) -> &Vec<Value> {
 }
 
 fn get_string_field<'a>(obj: &'a Value, field: &str) -> &'a str {
-    if let Value::Object(user_obj) = obj {
-        if let Some(Value::String(value)) = user_obj.get(field) {
-            return value.as_str();
-        }
-    }
-    panic!("Expected string field '{}' not found", field);
+    let Value::Object(user_obj) = obj else {
+        panic!("Expected object when getting field '{}'", field);
+    };
+
+    let Some(Value::String(value)) = user_obj.get(field) else {
+        panic!("Expected string field '{}' not found", field);
+    };
+
+    value.as_str()
 }
 
 fn get_number_field(obj: &Value, field: &str) -> i64 {
-    if let Value::Object(user_obj) = obj {
-        if let Some(Value::Number(value)) = user_obj.get(field) {
-            return value.as_i64().expect(&format!("Field '{}' should be a valid i64", field));
-        }
-    }
-    panic!("Expected number field '{}' not found", field);
+    let Value::Object(user_obj) = obj else {
+        panic!("Expected object when getting field '{}'", field);
+    };
+
+    let Some(Value::Number(value)) = user_obj.get(field) else {
+        panic!("Expected number field '{}' not found", field);
+    };
+
+    value.as_i64().expect(&format!("Field '{}' should be a valid i64", field))
 }
 
 fn extract_user_names(users: &[Value]) -> Vec<String> {
     users.iter()
-        .filter_map(|u| {
-            if let Value::Object(obj) = u {
-                if let Some(Value::String(name)) = obj.get("name") {
-                    return Some(name.to_string());
-                }
-            }
-            None
+        .filter_map(|user| {
+            let Value::Object(obj) = user else {
+                return None;
+            };
+
+            let Some(Value::String(name)) = obj.get("name") else {
+                return None;
+            };
+
+            Some(name.to_string())
         })
         .collect()
 }
