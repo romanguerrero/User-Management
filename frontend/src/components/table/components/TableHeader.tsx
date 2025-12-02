@@ -8,13 +8,13 @@ interface TableHeaderProps {
 
 export const TableHeader = memo(({ headerGroups }: TableHeaderProps) => {
   return (
-    <thead className="bg-gray-900/50">
+    <thead className="bg-gray-50 dark:bg-gray-900/50">
       {headerGroups.map((headerGroup) => (
         <tr key={headerGroup.id}>
           {headerGroup.headers.map((header) => (
             <th
               key={header.id}
-              className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider"
+              className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider"
             >
               {header.isPlaceholder
                 ? null

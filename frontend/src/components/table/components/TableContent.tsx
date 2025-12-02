@@ -16,9 +16,9 @@ export const TableContent = memo(({ searchValue }: TableContentProps) => {
   if (error) return <div className="p-4 text-red-500">Error: {error.message}</div>;
 
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-700/50 bg-gray-800/30 backdrop-blur-sm shadow-xl">
+    <div className="overflow-hidden rounded-xl border border-gray-300 dark:border-gray-700/50 bg-white dark:bg-gray-800/30 backdrop-blur-sm shadow-xl">
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-700/50 text-sm">
+        <table className="min-w-full divide-y divide-gray-300 dark:divide-gray-700/50 text-sm">
           <TableHeader headerGroups={table.getHeaderGroups()} />
           <TableBody rows={table.getRowModel().rows} />
           <TableFooter footerGroups={table.getFooterGroups()} />

@@ -4,11 +4,14 @@ import './index.css'
 import App from './App.tsx'
 import { ApolloProvider } from '@apollo/client/react'
 import { client } from './client.ts'
+import { ThemeProvider } from './contexts/ThemeContext'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ApolloProvider client={client}>
-      <App />
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
     </ApolloProvider>
   </StrictMode>,
 )
