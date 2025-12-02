@@ -46,17 +46,15 @@ fn assert_user_has_required_fields(user: &Value) {
 }
 
 fn extract_users_from_response(response: &Value) -> &Vec<Value> {
-    match response {
-        Value::Object(obj) => {
-            assert!(obj.contains_key("users"), "Response should contain 'users' field");
+    let Value::Object(obj) = response else {
+        panic!("Response data should be an object");
+    };
 
-            match obj.get("users") {
-                Some(Value::List(users)) => users,
-                _ => panic!("users field should be a list"),
-            }
-        }
-        _ => panic!("Response data should be an object"),
-    }
+    let Some(Value::List(users)) = obj.get("users") else {
+        panic!("Response should contain 'users' field as a list");
+    };
+
+    users
 }
 
 fn get_string_field<'a>(obj: &'a Value, field: &str) -> &'a str {
