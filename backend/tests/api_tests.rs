@@ -25,72 +25,61 @@ async fn setup_test_db() -> Result<PgPool, sqlx::Error> {
 }
 
 #[tokio::test]
-async fn test_users_query_basic() {    
+async fn test_users_query_without_filters() {
     // Setup
     let pool = setup_test_db().await.expect("Failed to setup test database");
-    
+
     let schema = Schema::build(Query, EmptyMutation, EmptySubscription)
         .data(pool.clone())
         .finish();
 
-    // Execute query with empty filters
+    // Execute query without filters
     let query = r#"
         query {
-            users(filters: {}) {
+            users (filters: {}) {
                 id
                 name
+                age
                 email
+                phone
+                createdAt
+                updatedAt
+                posts {
+                  id
+                  userId
+                  title
+                  content
+                  createdAt
+                  updatedAt
+                }
             }
         }
     "#;
 
     let response = schema.execute(query).await;
 
-    // Assert
     assert!(response.errors.is_empty(), "Query returned errors: {:?}", response.errors);
-    
-    // Verify the response structure
+
     let data = &response.data;
-    
-    // Verify users field exists (even if empty array)
+
     if let Value::Object(obj) = data {
         assert!(obj.contains_key("users"), "Response should contain 'users' field");
+
+        if let Some(Value::List(users)) = obj.get("users") {
+            assert_eq!(users.len(), 7, "Should return 7 users");
+
+            if let Some(Value::Object(first_user)) = users.first() {
+                assert!(first_user.contains_key("id"), "User should have 'id' field");
+                assert!(first_user.contains_key("name"), "User should have 'name' field");
+                assert!(first_user.contains_key("age"), "User should have 'age' field");
+                assert!(first_user.contains_key("email"), "User should have 'email' field");
+            } else {
+                panic!("First user should be an object");
+            }
+        } else {
+            panic!("users field should be a list");
+        }
     } else {
         panic!("Response data should be an object");
     }
 }
-
-// #[tokio::test]
-// async fn test_posts_query_basic() {
-//     // Setup
-//     let pool = setup_test_db().await;
-//     let schema = Schema::build(Query::default(), EmptyMutation, EmptySubscription)
-//         .data(pool.clone())
-//         .finish();
-
-//     // Execute query with empty filters
-//     let query = r#"
-//         query {
-//             posts(filters: {}) {
-//                 id
-//                 title
-//                 content
-//             }
-//         }
-//     "#;
-
-//     let response = schema.execute(query).await;
-
-//     // Assert
-//     assert!(response.errors.is_empty(), "Query returned errors: {:?}", response.errors);
-    
-//     // Verify the response structure
-//     let data = &response.data;
-    
-//     // Verify posts field exists (even if empty array)
-//     if let Value::Object(obj) = data {
-//         assert!(obj.contains_key("posts"), "Response should contain 'posts' field");
-//     } else {
-//         panic!("Response data should be an object");
-//     }
-// }
