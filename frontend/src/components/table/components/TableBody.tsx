@@ -8,14 +8,14 @@ interface TableBodyProps {
 
 export const TableBody = memo(({ rows }: TableBodyProps) => {
   return (
-    <tbody className="bg-transparent">
+    <tbody className="bg-transparent divide-y divide-gray-700/30">
       {rows.map((row) => (
         <tr
           key={row.id}
-          className="odd:bg-gray-800 even:bg-gray-900 hover:bg-gray-700"
+          className="hover:bg-gray-700/30 transition-colors"
         >
           {row.getVisibleCells().map((cell) => (
-            <td key={cell.id} className="px-4 py-2 text-gray-100">
+            <td key={cell.id} className="px-6 py-4 text-gray-100 whitespace-nowrap">
               {flexRender(cell.column.columnDef.cell, cell.getContext())}
             </td>
           ))}
