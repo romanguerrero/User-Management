@@ -1,4 +1,4 @@
-import React, { useEffect, useId, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { Tooltip } from './Tooltip'
 
 type HoverCardProps = {
@@ -37,6 +37,9 @@ export function HoverCard({ title, content, children }: HoverCardProps) {
   const [pos, setPos] = useState({ left: 0, top: 0 })
   const id = useId()
 
+  const handleShow = useCallback(() => setVisible(true), [])
+  const handleHide = useCallback(() => setVisible(false), [])
+
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') setVisible(false)
@@ -66,10 +69,10 @@ export function HoverCard({ title, content, children }: HoverCardProps) {
       ref={triggerRef}
       tabIndex={0}
       aria-describedby={id}
-      onMouseEnter={() => setVisible(true)}
-      onMouseLeave={() => setVisible(false)}
-      onFocus={() => setVisible(true)}
-      onBlur={() => setVisible(false)}
+      onMouseEnter={handleShow}
+      onMouseLeave={handleHide}
+      onFocus={handleShow}
+      onBlur={handleHide}
       className='inline-flex items-center'
     >
       {children}
