@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { flexRender, type HeaderGroup } from "@tanstack/react-table";
-import type { User } from "../../__generated__/graphql";
+import type { User } from "../../../__generated__/graphql";
 
 interface TableFooterProps {
   footerGroups: HeaderGroup<User>[];
