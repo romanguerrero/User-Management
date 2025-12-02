@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useQuery } from "@apollo/client/react";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { GetUsersDocument, type GetUsersQuery } from "../__generated__/graphql";
@@ -16,9 +17,11 @@ export const useUsersTable = (searchValue: string) => {
 
   const data: GetUsersQuery["users"] = usersData?.users ?? [];
 
+  const memoizedColumns = useMemo(() => columns, []);
+
   const table = useReactTable({
     data,
-    columns,
+    columns: memoizedColumns,
     getCoreRowModel: getCoreRowModel(),
   });
 
