@@ -10,7 +10,7 @@ export const Table = () => {
   }, []);
 
   return (
-    <div className="p-2">
+    <div className="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
       <TableFilters searchValue={searchValue} setSearchValue={handleSearchChange} />
       <TableContent searchValue={searchValue} />
     </div>
