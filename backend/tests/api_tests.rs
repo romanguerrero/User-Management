@@ -354,3 +354,59 @@ async fn test_users_query_filter_empty_result() {
     assert_eq!(users.len(), 0, "Should return 0 users when no matches are found");
 }
 
+#[tokio::test]
+async fn test_users_query_post_count() {
+    let pool = get_test_db_pool().await;
+    let schema = create_test_schema(pool);
+
+    let query = r#"
+        query {
+            users (filters: { name: { contains: "Bob Johnson" } }) {
+                id
+                name
+                posts {
+                    id
+                    title
+                    content
+                    userId
+                    createdAt
+                    updatedAt
+                }
+            }
+        }
+    "#;
+
+    let users = execute_query_and_extract_users(&schema, query).await;
+    assert_eq!(users.len(), 1, "Should return exactly 1 user named 'Bob Johnson'");
+
+    let user = &users[0];
+    assert_eq!(get_string_field(user, "name"), "Bob Johnson", "User name should be 'Bob Johnson'");
+
+    let Value::Object(user_obj) = user else {
+        panic!("User should be an object");
+    };
+
+    let Some(Value::List(posts)) = user_obj.get("posts") else {
+        panic!("User should have 'posts' field as a list");
+    };
+
+    assert_eq!(posts.len(), 5, "Bob Johnson should have exactly 5 posts");
+
+    for post in posts {
+        let user_id = get_number_field(post, "userId");
+        assert_eq!(user_id, 4, "All posts should belong to Bob Johnson (user_id: 4)");
+
+        let Value::Object(post_obj) = post else {
+            panic!("Post should be an object");
+        };
+
+        for field in ["id", "title", "content", "userId", "createdAt", "updatedAt"] {
+            assert!(
+                post_obj.contains_key(field),
+                "Post should have '{}' field",
+                field
+            );
+        }
+    }
+}
+
