@@ -1,55 +1,21 @@
 import { memo } from "react";
 import {
-  createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable,
-  type CellContext,
 } from "@tanstack/react-table";
 import { useQuery } from "@apollo/client/react";
 import {
   GetUsersDocument,
   type GetUsersQuery,
-  type User,
 } from "../../__generated__/graphql";
 import { LoadingSpinner } from "../LoadingSpinner";
-import { GenericCell } from "./cells/GenericCell";
-import { PostCell } from "./cells/PostCell";
+import { columns } from "./Columns";
 
 
 interface TableContentProps {
   searchValue: string;
 }
-
-
-const columnHelper = createColumnHelper<GetUsersQuery["users"][0]>();
-
-const columns = [
-  columnHelper.accessor("id", {
-    header: "ID",
-    cell: (info: CellContext<User, number>) => <GenericCell value={info.getValue()} />,
-  }),
-  columnHelper.accessor("name", {
-    header: "Name",
-    cell: (info: CellContext<User, string>) => <GenericCell value={info.getValue()} />,
-  }),
-  columnHelper.accessor("age", {
-    header: "Age",
-    cell: (info: CellContext<User, number>) => <GenericCell value={info.getValue()} />,
-  }),
-  columnHelper.accessor("email", {
-    header: "Email",
-    cell: (info: CellContext<User, string>) => <GenericCell value={info.getValue()} />,
-  }),
-  columnHelper.accessor("phone", {
-    header: "Phone",
-    cell: (info: CellContext<User, string>) => <GenericCell value={info.getValue()} />,
-  }),
-  columnHelper.accessor("posts", {
-    header: "Post Count",
-    cell: (info: any) => <PostCell posts={info.getValue()} />,
-  }),
-];
 
 
 export const TableContent = memo(({ searchValue }: TableContentProps) => {
