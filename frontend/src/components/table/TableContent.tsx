@@ -1,52 +1,14 @@
 import { memo } from "react";
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { useQuery } from "@apollo/client/react";
-import {
-  GetUsersDocument,
-  type GetUsersQuery,
-} from "../../__generated__/graphql";
+import { flexRender } from "@tanstack/react-table";
 import { LoadingSpinner } from "../LoadingSpinner";
-import { columns } from "./Columns";
-import { useDebouncedValue } from "../../hooks/useDebouncedValue";
-
+import { useUsersTable } from "../../hooks/useUsersTable";
 
 interface TableContentProps {
   searchValue: string;
 }
 
-const SEARCH_DEBOUNCE_MS = 300;
-
 export const TableContent = memo(({ searchValue }: TableContentProps) => {
-  const debouncedSearch = useDebouncedValue(searchValue, SEARCH_DEBOUNCE_MS);
-  
-  const isNumeric = !isNaN(Number(debouncedSearch)) && debouncedSearch.trim() !== '';
-  const numericValue = isNumeric ? Number(debouncedSearch) : undefined;
-
-  const filters = {
-    ...(numericValue && { 
-      id: { equals: numericValue },
-      age: { equals: numericValue }
-    }),
-    name: { contains: debouncedSearch },
-    email: { contains: debouncedSearch },
-    phone: { contains: debouncedSearch },
-  };
-
-  const { data: usersData, loading, error } = useQuery(GetUsersDocument, {
-    variables: { filters }, 
-  })
-
-  const data: GetUsersQuery["users"] = usersData?.users ?? [];
-
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
+  const { table, loading, error } = useUsersTable(searchValue);
 
   if (loading) return <LoadingSpinner />;
   if (error) return <div className="p-4 text-red-500">Error: {error.message}</div>;
