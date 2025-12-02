@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useId, useRef, useState } from 'react'
 import { Tooltip } from './Tooltip'
 
 type HoverCardProps = {
@@ -33,7 +33,7 @@ export function HoverCard({ title, content, children }: HoverCardProps) {
   const triggerRef = useRef<HTMLElement | null>(null)
   const [visible, setVisible] = useState(false)
   const [pos, setPos] = useState({ left: 0, top: 0 })
-  const idRef = useRef(`hovercard-${Math.random().toString(36).slice(2, 9)}`)
+  const id = useId()
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -51,7 +51,7 @@ export function HoverCard({ title, content, children }: HoverCardProps) {
 
   const tooltip = visible ? (
     <Tooltip
-      id={idRef.current}
+      id={id}
       left={pos.left}
       top={pos.top}
       title={title}
@@ -67,7 +67,7 @@ export function HoverCard({ title, content, children }: HoverCardProps) {
     <span
       ref={setRef}
       tabIndex={0}
-      aria-describedby={idRef.current}
+      aria-describedby={id}
       onMouseEnter={() => setVisible(true)}
       onMouseLeave={() => setVisible(false)}
       onFocus={() => setVisible(true)}
