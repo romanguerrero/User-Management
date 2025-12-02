@@ -8,26 +8,26 @@ interface GenericCellProps {
 
 export const GenericCell = memo(({ value }: GenericCellProps) => {
   if (value == null) {
-    return <td>-</td>; 
+    return <>-</>; 
   }
 
   switch (typeof value) {
     case "string":
-      return <td>{value}</td>;
+      return <>{value}</>;
 
     case "number":
-      return <td>{value.toString()}</td>;
+      return <>{value.toString()}</>;
 
     case "boolean":
-        return <td>{value ? "True" : "False"}</td>;
+        return <>{value ? "True" : "False"}</>;
 
     case "object":
       if (value instanceof Date) {
-        return <td>{value.toDateString()}</td>;
+        return <>{value.toDateString()}</>;
       }
-      return <td>{JSON.stringify(value)}</td>;
+      return <>{JSON.stringify(value)}</>;
 
     default:
-      return <td>{String(value)}</td>;
+      return <>{String(value)}</>;
   }
 });
