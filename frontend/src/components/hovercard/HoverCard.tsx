@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useId, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { Tooltip } from './Tooltip'
 
 type HoverCardProps = {
-  title?: React.ReactNode
-  content?: React.ReactNode
-  children: React.ReactNode
+  title?: ReactNode
+  content?: ReactNode
+  children: ReactNode
 }
 
 const TOOLTIP_CONFIG = {
