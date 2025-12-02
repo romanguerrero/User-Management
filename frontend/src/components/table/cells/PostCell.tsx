@@ -1,3 +1,4 @@
+import { memo, useMemo } from "react";
 import { HoverCard } from "../../hovercard/HoverCard";
 
 interface Post {
@@ -9,14 +10,18 @@ interface PostsCellProps {
   posts: Post[];
 }
 
-export function PostCell({ posts }: PostsCellProps) {
-  const postArray = Array.isArray(posts) ? posts : [];
+const truncate = (text: string, maxLength = 100) =>
+  text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+
+export const PostCell = memo(({ posts }: PostsCellProps) => {
+  const postArray = useMemo(() => 
+    Array.isArray(posts) ? posts : [], 
+    [posts]
+  );
+  
   const count = postArray.length;
 
-  const truncate = (text: string, maxLength = 100) =>
-    text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
-
-  const content = (
+  const content = useMemo(() => (
     <div className="space-y-2">
       {postArray.length > 0 ? (
         postArray.slice(0, 3).map((p, i) => (
@@ -31,11 +36,11 @@ export function PostCell({ posts }: PostsCellProps) {
         <div className="text-sm text-gray-300">No posts</div>
       )}
     </div>
-  );
+  ), [postArray]);
 
   return (
     <HoverCard title={`${count} post${count === 1 ? "" : "s"}`} content={content}>
       <span className="text-indigo-300">{count}</span>
     </HoverCard>
   );
-}
+});
