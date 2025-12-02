@@ -7,6 +7,7 @@ mod resolvers;
 
 use resolvers::Query;
 
+// Helper functions
 async fn setup_test_db() -> Result<PgPool, sqlx::Error> {
     let database_url = env::var("DATABASE_URL")
         .unwrap_or_else(|_| "postgres://postgres:password@localhost:5432/graphql_db".to_string());
@@ -114,6 +115,7 @@ async fn execute_query_and_extract_users(schema: &Schema<Query, EmptyMutation, E
     extract_users_from_response(&response.data).clone()
 }
 
+// user query tests
 #[tokio::test]
 async fn test_users_query_with_empty_filters() {
     let pool = setup_test_db().await.expect("Failed to setup test database");
