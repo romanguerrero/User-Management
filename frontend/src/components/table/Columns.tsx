@@ -30,6 +30,6 @@ export const columns = [
   }),
   columnHelper.accessor("posts", {
     header: "Post Count",
-    cell: (info: any) => <PostCell posts={info.getValue()} />,
+    cell: (info) => <PostCell posts={info.getValue()} />,
   }),
 ];

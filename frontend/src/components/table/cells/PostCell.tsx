@@ -1,8 +1,8 @@
 import { HoverCard } from "../../hovercard/HoverCard";
 
 interface Post {
-  title?: string;
-  content?: string;
+  title?: string | null;
+  content?: string | null;
 }
 
 interface PostsCellProps {
