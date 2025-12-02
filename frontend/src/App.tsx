@@ -5,7 +5,7 @@ import { useTheme } from './contexts/ThemeContext'
 const Header = () => {
   const { theme } = useTheme();
   return (
-    <header className={`bg-white dark:bg-gray-900/50 backdrop-blur-sm border-b border-gray-300 dark:border-gray-700/50 sticky top-0 z-10 ${theme === 'dark' ? 'bg-gray-900/50 border-gray-700/50' : 'bg-white border-gray-300'}`}>
+    <header className={`backdrop-blur-sm border-b sticky top-0 z-10 ${theme === 'dark' ? 'bg-gray-800/40 border-gray-700/50' : 'bg-gray-50/90 border-gray-300'}`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="py-6 flex items-center justify-between">
           <div>
