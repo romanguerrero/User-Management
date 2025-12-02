@@ -409,4 +409,3 @@ async fn test_users_query_post_count() {
         }
     }
 }
-
