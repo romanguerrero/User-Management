@@ -173,3 +173,68 @@ async fn test_users_query_filter_by_id_equals() {
     }
 }
 
+#[tokio::test]
+async fn test_users_query_filter_by_age_equals() {
+    let pool = setup_test_db().await.expect("Failed to setup test database");
+    let schema = create_test_schema(pool);
+
+    // Test filtering by exact age match (age: 35)
+    // According to init.sql, users with age 35 are: Bob Johnson (id: 4), Angela Schmidt (id: 16), Jessica Rodriguez (id: 17)
+    let query = r#"
+        query {
+            users (filters: { age: { equals: 35 } }) {
+                id
+                name
+                age
+                email
+            }
+        }
+    "#;
+
+    let response = schema.execute(query).await;
+
+    // Validate response has no errors
+    assert!(response.errors.is_empty(), "Query returned errors: {:?}", response.errors);
+
+    let users = extract_users_from_response(&response.data);
+
+    // Should return exactly 3 users with age 35
+    assert_eq!(users.len(), 3, "Should return exactly 3 users with age 35");
+
+    // Validate all returned users have age 35
+    for user in users {
+        if let Value::Object(user_obj) = user {
+            if let Some(Value::Number(age)) = user_obj.get("age") {
+                assert_eq!(
+                    age.as_i64(),
+                    Some(35),
+                    "All returned users should have age 35"
+                );
+            } else {
+                panic!("User should have an 'age' field with a number value");
+            }
+
+            // Validate has all required fields
+            assert_user_has_required_fields(user);
+        } else {
+            panic!("User should be an object");
+        }
+    }
+
+    // Verify specific users are included
+    let user_names: Vec<String> = users.iter()
+        .filter_map(|u| {
+            if let Value::Object(obj) = u {
+                if let Some(Value::String(name)) = obj.get("name") {
+                    return Some(name.to_string());
+                }
+            }
+            None
+        })
+        .collect();
+
+    assert!(user_names.contains(&"Bob Johnson".to_string()), "Should include Bob Johnson");
+    assert!(user_names.contains(&"Angela Schmidt".to_string()), "Should include Angela Schmidt");
+    assert!(user_names.contains(&"Jessica Rodriguez".to_string()), "Should include Jessica Rodriguez");
+}
+
