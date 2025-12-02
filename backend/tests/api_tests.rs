@@ -24,16 +24,47 @@ async fn setup_test_db() -> Result<PgPool, sqlx::Error> {
     Ok(pool)
 }
 
+fn create_test_schema(pool: PgPool) -> Schema<Query, EmptyMutation, EmptySubscription> {
+    Schema::build(Query, EmptyMutation, EmptySubscription)
+        .data(pool)
+        .finish()
+}
+
+fn assert_user_has_required_fields(user: &Value) {
+    let required_fields = ["id", "name", "age", "email"];
+
+    if let Value::Object(user_obj) = user {
+        for field in required_fields {
+            assert!(
+                user_obj.contains_key(field),
+                "User should have '{}' field",
+                field
+            );
+        }
+    } else {
+        panic!("User should be an object");
+    }
+}
+
+fn extract_users_from_response(response: &Value) -> &Vec<Value> {
+    match response {
+        Value::Object(obj) => {
+            assert!(obj.contains_key("users"), "Response should contain 'users' field");
+
+            match obj.get("users") {
+                Some(Value::List(users)) => users,
+                _ => panic!("users field should be a list"),
+            }
+        }
+        _ => panic!("Response data should be an object"),
+    }
+}
+
 #[tokio::test]
-async fn test_users_query_without_filters() {
-    // Setup
+async fn test_users_query_with_empty_filters() {
     let pool = setup_test_db().await.expect("Failed to setup test database");
+    let schema = create_test_schema(pool);
 
-    let schema = Schema::build(Query, EmptyMutation, EmptySubscription)
-        .data(pool.clone())
-        .finish();
-
-    // Execute query without filters
     let query = r#"
         query {
             users (filters: {}) {
@@ -58,28 +89,14 @@ async fn test_users_query_without_filters() {
 
     let response = schema.execute(query).await;
 
+    // Validate response
     assert!(response.errors.is_empty(), "Query returned errors: {:?}", response.errors);
 
-    let data = &response.data;
+    let users = extract_users_from_response(&response.data);
+    assert_eq!(users.len(), 7, "Should return 7 users");
 
-    if let Value::Object(obj) = data {
-        assert!(obj.contains_key("users"), "Response should contain 'users' field");
-
-        if let Some(Value::List(users)) = obj.get("users") {
-            assert_eq!(users.len(), 7, "Should return 7 users");
-
-            if let Some(Value::Object(first_user)) = users.first() {
-                assert!(first_user.contains_key("id"), "User should have 'id' field");
-                assert!(first_user.contains_key("name"), "User should have 'name' field");
-                assert!(first_user.contains_key("age"), "User should have 'age' field");
-                assert!(first_user.contains_key("email"), "User should have 'email' field");
-            } else {
-                panic!("First user should be an object");
-            }
-        } else {
-            panic!("users field should be a list");
-        }
-    } else {
-        panic!("Response data should be an object");
+    // Validate first user has required fields
+    if let Some(first_user) = users.first() {
+        assert_user_has_required_fields(first_user);
     }
 }
