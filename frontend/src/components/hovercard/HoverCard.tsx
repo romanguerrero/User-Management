@@ -7,22 +7,24 @@ type HoverCardProps = {
   children: React.ReactNode
 }
 
-function computeTooltipPosition(el: HTMLElement) {
-  const TOOLTIP_WIDTH = 280
-  const VIEWPORT_PADDING = 8
-  const TRIGGER_GAP = 8
+const TOOLTIP_CONFIG = {
+  WIDTH: 280,
+  VIEWPORT_PADDING: 8,
+  TRIGGER_GAP: 8,
+} as const
 
+function computeTooltipPosition(el: HTMLElement) {  
   const rect = el.getBoundingClientRect()
   const scrollX = window.scrollX || window.pageXOffset
   const scrollY = window.scrollY || window.pageYOffset
 
   let left = rect.left + scrollX
-  const top = rect.bottom + scrollY + TRIGGER_GAP
+  const top = rect.bottom + scrollY + TOOLTIP_CONFIG.TRIGGER_GAP
 
-  const maxLeft = window.innerWidth + scrollX - TOOLTIP_WIDTH - VIEWPORT_PADDING
-  const minLeft = scrollX + VIEWPORT_PADDING
+  const maxLeft = window.innerWidth + scrollX - TOOLTIP_CONFIG.WIDTH - TOOLTIP_CONFIG.VIEWPORT_PADDING
+  const minLeft = scrollX + TOOLTIP_CONFIG.VIEWPORT_PADDING
 
-  if (left + TOOLTIP_WIDTH > window.innerWidth + scrollX) {
+  if (left + TOOLTIP_CONFIG.WIDTH > window.innerWidth + scrollX) {
     left = Math.max(minLeft, maxLeft)
   }
 
