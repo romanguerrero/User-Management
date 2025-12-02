@@ -1,4 +1,4 @@
-import HoverCard from "../../HoverCard";
+import HoverCard from "../../hovercard/HoverCard";
 
 interface Post {
   title?: string;
