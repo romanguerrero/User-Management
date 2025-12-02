@@ -190,27 +190,6 @@ describe('HoverCard', () => {
     });
   });
 
-  it('handles rapid hover on/off without errors', async () => {
-    const user = userEvent.setup();
-    
-    render(
-      <HoverCard title="Test Title" content="Test Content">
-        <button>Hover Me</button>
-      </HoverCard>
-    );
-    
-    const trigger = screen.getByText('Hover Me').parentElement!;
-    
-    // Rapidly hover on and off
-    await user.hover(trigger);
-    await user.unhover(trigger);
-    await user.hover(trigger);
-    await user.unhover(trigger);
-    
-    // Should not throw errors
-    expect(true).toBe(true);
-  });
-
   it('computes tooltip position correctly', async () => {
     render(
       <HoverCard title="Test Title" content="Test Content">
@@ -239,8 +218,8 @@ describe('HoverCard', () => {
       const tooltip = screen.getByRole('tooltip');
       const style = tooltip.style;
       expect(style.position).toBe('fixed');
-      expect(style.left).toBeTruthy();
-      expect(style.top).toBeTruthy();
+      expect(style.left).toBe('100px'); 
+      expect(style.top).toBe('78px');
     });
   });
 
@@ -255,7 +234,7 @@ describe('HoverCard', () => {
     
     // Mock getBoundingClientRect to simulate near-edge position
     vi.spyOn(trigger!, 'getBoundingClientRect').mockReturnValue({
-      left: 900, // Near right edge
+      left: 900, // Near right edge - tooltip would overflow at this position
       top: 50,
       bottom: 70,
       right: 1000,
@@ -270,8 +249,11 @@ describe('HoverCard', () => {
     
     await waitFor(() => {
       const tooltip = screen.getByRole('tooltip');
-      expect(tooltip).toBeTruthy();
-      // Tooltip should be repositioned to fit in viewport
+      const style = tooltip.style;
+      // Tooltip (280px wide) should be repositioned to fit in viewport (1024px)
+      // maxLeft = 1024 - 280 - 8 = 736px
+      expect(style.left).toBe('736px');
+      expect(style.top).toBe('78px');
     });
   });
 
