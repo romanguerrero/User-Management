@@ -2,8 +2,7 @@ import {
   createColumnHelper,
 } from "@tanstack/react-table";
 import type { GetUsersQuery } from "../../__generated__/graphql";
-import { GenericCell } from "./cells/GenericCell";
-import { PostCell } from "./cells/PostCell";
+import { GenericCell, PostCell } from "./cells";
 
 const columnHelper = createColumnHelper<GetUsersQuery["users"][0]>();
 

@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
-import { TableFilters } from "./TableFilters";
-import { TableContent } from "./TableContent";
+import { TableFilters } from "./components/TableFilters";
+import { TableContent } from "./components/TableContent";
 
 export const Table = () => {
   const [searchValue, setSearchValue] = useState("");

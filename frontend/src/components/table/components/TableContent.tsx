@@ -1,6 +1,6 @@
 import { memo } from "react";
-import { LoadingSpinner } from "../LoadingSpinner";
-import { useUsersTable } from "../../hooks/useUsersTable";
+import { LoadingSpinner } from "../../LoadingSpinner";
+import { useUsersTable } from "../../../hooks/useUsersTable";
 import { TableHeader } from "./TableHeader";
 import { TableBody } from "./TableBody";
 import { TableFooter } from "./TableFooter";

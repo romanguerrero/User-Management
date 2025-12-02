@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
-import { TableFilters } from './TableFilters';
+import { TableFilters } from '../components/TableFilters';
 
 describe('TableFilters', () => {
   afterEach(() => {

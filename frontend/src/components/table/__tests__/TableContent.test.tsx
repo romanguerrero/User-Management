@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach, type Mock } from 'vitest';
 import { render, screen, cleanup, within } from '@testing-library/react';
-import type { GetUsersQuery } from '../../__generated__/graphql';
+import type { GetUsersQuery } from '../../../__generated__/graphql';
 
 // Mock third-party spinner to avoid JSDOM issues
 vi.mock('react-loader-spinner', () => ({
@@ -26,7 +26,7 @@ describe('TableContent', () => {
         loading: true,
         error: undefined,
       });
-      const { TableContent } = await import('./TableContent');
+      const { TableContent } = await import('../components/TableContent');
       render(<TableContent searchValue={''} />);
       const status = screen.getByRole('status');
       const text = screen.getByText(/loading/i);
@@ -43,7 +43,7 @@ describe('TableContent', () => {
       loading: false,
       error: new Error('Boom'),
     });
-    const { TableContent } = await import('./TableContent');
+    const { TableContent } = await import('../components/TableContent');
     render(<TableContent searchValue={''} />);
 
     const error = await screen.findByText(/error: boom/i);
@@ -73,7 +73,7 @@ describe('TableContent', () => {
       loading: false,
       error: undefined,
     });
-    const { TableContent } = await import('./TableContent');
+    const { TableContent } = await import('../components/TableContent');
     render(<TableContent searchValue={'1'} />);
 
     // Wait for data to appear
@@ -111,7 +111,7 @@ describe('TableContent', () => {
       loading: false,
       error: undefined,
     });
-    const { TableContent: Comp } = await import('./TableContent');
+    const { TableContent: Comp } = await import('../components/TableContent');
 
     const searchValue = '42';
     render(<Comp searchValue={searchValue} />);
