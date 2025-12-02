@@ -11,25 +11,29 @@ import {
 } from "../../__generated__/graphql";
 import { LoadingSpinner } from "../LoadingSpinner";
 import { columns } from "./Columns";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 
 
 interface TableContentProps {
   searchValue: string;
 }
 
+const SEARCH_DEBOUNCE_MS = 300;
 
 export const TableContent = memo(({ searchValue }: TableContentProps) => {
-  const isNumeric = !isNaN(Number(searchValue)) && searchValue.trim() !== '';
-  const numericValue = isNumeric ? Number(searchValue) : undefined;
+  const debouncedSearch = useDebouncedValue(searchValue, SEARCH_DEBOUNCE_MS);
+  
+  const isNumeric = !isNaN(Number(debouncedSearch)) && debouncedSearch.trim() !== '';
+  const numericValue = isNumeric ? Number(debouncedSearch) : undefined;
 
   const filters = {
     ...(numericValue && { 
       id: { equals: numericValue },
       age: { equals: numericValue }
     }),
-    name: { contains: searchValue },
-    email: { contains: searchValue },
-    phone: { contains: searchValue },
+    name: { contains: debouncedSearch },
+    email: { contains: debouncedSearch },
+    phone: { contains: debouncedSearch },
   };
 
   const { data: usersData, loading, error } = useQuery(GetUsersDocument, {
