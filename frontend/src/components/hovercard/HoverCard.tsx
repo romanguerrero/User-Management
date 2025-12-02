@@ -1,12 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
+import { Tooltip } from './Tooltip'
 
 type HoverCardProps = {
   title?: React.ReactNode
   content?: React.ReactNode
   children: React.ReactNode
 }
-
 
 
 function computeTooltipPosition(el: HTMLElement) {
@@ -32,7 +31,7 @@ function computeTooltipPosition(el: HTMLElement) {
 }
 
 
-export default function HoverCard({ title, content, children }: HoverCardProps) {
+export function HoverCard({ title, content, children }: HoverCardProps) {
   const triggerRef = useRef<HTMLElement | null>(null)
   const [visible, setVisible] = useState(false)
   const [pos, setPos] = useState({ left: 0, top: 0 })
@@ -53,19 +52,14 @@ export default function HoverCard({ title, content, children }: HoverCardProps) 
   }, [visible])
 
   const tooltip = visible ? (
-    createPortal(
-      <div
-        id={idRef.current}
-        role="tooltip"
-        className="z-50 max-w-xs rounded bg-gray-800 p-3 text-sm text-gray-100 shadow-lg"
-        style={{ position: 'fixed', left: pos.left, top: pos.top }}
-      >
-        {title ? <div className="font-semibold mb-1">{title}</div> : null}
-        {content ? <div className="whitespace-normal">{content}</div> : null}
-      </div>,
-      document.body
-    )
-  ) : null
+    <Tooltip
+      id={idRef.current}
+      left={pos.left}
+      top={pos.top}
+      title={title}
+      content={content}
+    />
+) : null
 
   const setRef = (el: HTMLElement | null) => {
     triggerRef.current = el
