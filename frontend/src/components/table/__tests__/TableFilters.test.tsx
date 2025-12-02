@@ -2,6 +2,8 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { TableFilters } from '../components/TableFilters';
 
+const PLACEHOLDER_TEXT = 'Search users...';
+
 describe('TableFilters', () => {
   afterEach(() => {
     cleanup();
@@ -10,7 +12,7 @@ describe('TableFilters', () => {
   it('renders input with correct value', () => {
     const mockSet = vi.fn();
     render(<TableFilters searchValue='test' setSearchValue={mockSet} />);
-    const input = screen.getByPlaceholderText('Search') as HTMLInputElement;
+    const input = screen.getByPlaceholderText(PLACEHOLDER_TEXT) as HTMLInputElement;
     expect(input).toBeTruthy();
     expect(input.value).toBe('test');
   });
@@ -18,7 +20,7 @@ describe('TableFilters', () => {
   it('calls setSearchValue on input change', () => {
     const mockSet = vi.fn();
     render(<TableFilters searchValue='' setSearchValue={mockSet} />);
-    const input = screen.getByPlaceholderText('Search') as HTMLInputElement;
+    const input = screen.getByPlaceholderText(PLACEHOLDER_TEXT) as HTMLInputElement;
     fireEvent.change(input, { target: { value: 'new value' } });
     expect(mockSet).toHaveBeenCalledWith('new value');
   });
@@ -28,12 +30,12 @@ describe('TableFilters', () => {
     const { rerender } = render(
       <TableFilters searchValue='' setSearchValue={mockSet} />
     );
-    const input = screen.getByPlaceholderText('Search') as HTMLInputElement;
+    const input = screen.getByPlaceholderText(PLACEHOLDER_TEXT) as HTMLInputElement;
     expect(input.value).toBe('');
 
     rerender(<TableFilters searchValue='updated' setSearchValue={mockSet} />);
     const updatedInput = screen.getByPlaceholderText(
-      'Search'
+      PLACEHOLDER_TEXT
     ) as HTMLInputElement;
     expect(updatedInput.value).toBe('updated');
   });
