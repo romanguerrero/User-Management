@@ -19,17 +19,16 @@ interface TableContentProps {
 
 
 export const TableContent = memo(({ searchValue }: TableContentProps) => {
+  const filters = {
+    id: { equals: Number(searchValue) },
+    age: { equals: Number(searchValue) },        
+    name: { contains: searchValue },
+    email: { contains: searchValue },
+    phone: { contains: searchValue },
+  };
 
   const { data: usersData, loading, error } = useQuery(GetUsersDocument, {
-    variables: { 
-      filters: {
-        id: { equals: Number(searchValue) },
-        age: { equals: Number(searchValue) },        
-        name: { contains: searchValue },
-        email: { contains: searchValue },
-        phone: { contains: searchValue },
-      }
-    }, 
+    variables: { filters }, 
   })
 
   const data: GetUsersQuery["users"] = usersData?.users ?? [];
