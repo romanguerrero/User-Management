@@ -3,6 +3,8 @@ import { useTheme } from '../contexts/ThemeContext';
 const ThemeToggle = () => {
   const { theme, toggleTheme } = useTheme();
 
+  console.log('Current theme:', theme); // Add this line for logging
+
   return (
     <button
       onClick={toggleTheme}
