@@ -2,10 +2,6 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { TableFilters } from '../components/TableFilters';
 
-vi.mock('../../../contexts/ThemeContext', () => ({
-  useTheme: vi.fn(() => ({ theme: 'light' })),
-}));
-
 describe('TableFilters', () => {
   afterEach(() => {
     cleanup();

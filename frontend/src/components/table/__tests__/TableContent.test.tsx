@@ -2,10 +2,6 @@ import { describe, it, expect, vi, afterEach, type Mock } from 'vitest';
 import { render, screen, cleanup, within } from '@testing-library/react';
 import type { GetUsersQuery } from '../../../__generated__/graphql';
 
-vi.mock('../../../contexts/ThemeContext', () => ({
-  useTheme: vi.fn(() => ({ theme: 'light' })),
-}));
-
 // Mock third-party spinner to avoid JSDOM issues
 vi.mock('react-loader-spinner', () => ({
   RotatingLines: () => <div data-testid='spinner' />,

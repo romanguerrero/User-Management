@@ -28,11 +28,17 @@ export const ThemeProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const root = window.document.body;
-    root.classList.remove('light', 'dark');
+    const root = window.document.documentElement;
+    // Set data-theme attribute for CSS variables
+    root.setAttribute('data-theme', theme);
+    
+    // Keep body class for backward compatibility during migration
+    const body = window.document.body;
+    body.classList.remove('light', 'dark');
     if (theme === 'dark') {
-      root.classList.add('dark');
+      body.classList.add('dark');
     }
+    
     localStorage.setItem('theme', theme);
   }, [theme]);
 
