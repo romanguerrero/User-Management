@@ -11,7 +11,7 @@ export const TableHeader = memo(({ headerGroups }: TableHeaderProps) => {
   const { theme } = useTheme();
 
   return (
-    <thead className={theme === 'dark' ? 'bg-gray-900/50' : 'bg-green-500'}>
+    <thead className={theme === 'dark' ? 'bg-gray-900/50' : 'bg-gray-100/50'}>
       {headerGroups.map((headerGroup) => (
         <tr key={headerGroup.id}>
           {headerGroup.headers.map((header) => (
