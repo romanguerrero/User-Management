@@ -40,7 +40,7 @@ export const PostCell = memo(({ posts }: PostsCellProps) => {
 
   return (
     <HoverCard title={`${count} post${count === 1 ? "" : "s"}`} content={content}>
-      <span className="text-indigo-300">{count}</span>
+      <span>{count}</span>
     </HoverCard>
   );
 });
