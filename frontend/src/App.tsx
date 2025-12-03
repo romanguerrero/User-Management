@@ -10,7 +10,7 @@ const Header = () => {
         <div className="py-6 flex items-center justify-between">
           <div>
             <h1 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-black'}`}>User Management</h1>
-            <p className={`mt-1 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Search through your user database</p>
+            <p className={`mt-1 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-900'}`}>Search through your user database</p>
           </div>
           <ThemeToggle />
         </div>
