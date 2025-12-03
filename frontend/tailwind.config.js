@@ -4,10 +4,18 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: ['class', '[data-theme="dark"]'],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['var(--font-family-sans)'],
+      },
       colors: {
+        // Background colors
+        'background': 'var(--background)',
+        'background-secondary': 'var(--background-secondary)',
+        'background-gradient-start': 'var(--background-gradient-start)',
+        'background-gradient-end': 'var(--background-gradient-end)',
+        
         // Surface colors
         'surface': 'var(--surface)',
         'surface-hover': 'var(--surface-hover)',
@@ -22,17 +30,13 @@ export default {
         'border': 'var(--border)',
         'border-subtle': 'var(--border-subtle)',
         
-        // Background colors
-        'background': 'var(--background)',
-        'background-secondary': 'var(--background-secondary)',
-        'background-gradient-start': 'var(--background-gradient-start)',
-        'background-gradient-end': 'var(--background-gradient-end)',
-        
         // Component specific
-        'table-hover': 'var(--table-hover)',
         'input-bg': 'var(--input-bg)',
         'button-bg': 'var(--button-bg)',
         'button-hover': 'var(--button-hover)',
+      },
+      backgroundColor: {
+        'table-hover': 'var(--table-hover)',
       },
     },
   },
